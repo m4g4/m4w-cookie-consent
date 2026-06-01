@@ -34,6 +34,7 @@ class M4W_CC_Cookie_Consent {
 
 		if ( $settings['enabled'] ) {
 			add_action( 'wp_head', array( $this, 'output_gcm_defaults' ), -PHP_INT_MAX );
+			add_action( 'wp_head', array( $this, 'output_header_scripts' ), 100 );
 			add_action( 'wp_head', array( $this, 'output_custom_css' ), 100 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 			add_action( 'wp_footer', array( $this, 'output_banner' ) );
@@ -97,6 +98,7 @@ class M4W_CC_Cookie_Consent {
 			'consent_expiry_rejected' => 30,
 			'gcm_enabled'            => true,
 			'custom_css'             => '',
+			'header_scripts'         => '',
 			'categories'         => array(
 				'necessary'     => array(
 					'label'       => array(
@@ -323,6 +325,14 @@ gtag("set","developer_id.dY2Q2ZW",true);
 			return;
 		}
 		echo '<style id="m4w-cc-custom-css">' . wp_strip_all_tags( $css ) . '</style>' . "\n";
+	}
+
+	public function output_header_scripts() {
+		$js = $this->get_settings()['header_scripts'];
+		if ( ! $js ) {
+			return;
+		}
+		echo '<script>' . "\n" . $js . "\n" . '</script>' . "\n";
 	}
 
 	public function output_banner() {
