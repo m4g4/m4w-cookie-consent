@@ -1,0 +1,133 @@
+#m4w-cc-banner {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: #dee2eb;
+	color: #111;
+	box-shadow: 0 -4px 20px rgba(0,0,0,.12);
+	z-index: 99999;
+	padding: 32px 16px;
+	font-size: 0.7rem;
+}
+.m4w-cc-inner {
+	max-width: 800px;
+	margin: 0 auto;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+}
+.m4w-cc-text {
+	flex: 1 1 360px;
+}
+.m4w-cc-title {
+	font-weight: 700;
+	font-size: 1.2rem;
+	margin: 0 0 8px;
+}
+.m4w-cc-desc {
+	margin: 0;
+	color: #444;
+}
+.m4w-cc-buttons {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	align-items: center;
+}
+
+.m4w-cc-buttons .m4w-cc-btn {
+	min-width: 180px;
+}
+
+#m4w-cc-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.m4w-cc-hidden {
+	display: none !important;
+}
+.m4w-cc-modal-overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0,0,0,.45);
+}
+.m4w-cc-modal-content {
+	position: relative;
+	background: #fff;
+	border-radius: 8px;
+	padding: 28px 32px;
+	max-width: 560px;
+	width: 90%;
+	max-height: 80vh;
+	overflow-y: auto;
+	box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+.m4w-cc-modal-close {
+	position: absolute;
+	top: 10px;
+	right: 14px;
+	background: none;
+	border: none;
+	font-size: 24px;
+	cursor: pointer;
+	color: #9ca3af;
+}
+.m4w-cc-modal-content h2 {
+	margin: 0 0 16px;
+	font-size: 1.2rem;
+}
+.m4w-cc-modal-content table {
+	width: 100%;
+	border-collapse: collapse;
+}
+.m4w-cc-modal-content td {
+	padding: 12px 8px;
+	vertical-align: top;
+	border-bottom: 1px solid #f3f4f6;
+	font-size: 0.7rem;
+	color: #666;
+}
+.m4w-cc-modal-content td:first-child {
+	width: 40%;
+}
+.m4w-cc-modal-content label {
+	font-weight: 600;
+	color: #333;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.m4w-cc-modal-content input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	accent-color: #cf81b6;
+}
+.m4w-cc-modal-actions {
+	margin-top: 16px;
+	display: flex;
+	gap: 8px;
+}
+.m4w-cc-privacy {
+	margin: 16px 0 0;
+	font-size: 0.7rem;
+}
+.m4w-cc-privacy a {
+	color: #0066cc;
+	text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+	.m4w-cc-buttons {
+		width: 100%;
+	}
+	.m4w-cc-btn {
+		flex: 1;
+		text-align: center;
+	}
+}
