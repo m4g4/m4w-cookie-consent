@@ -10,13 +10,14 @@
 	};
 
 	function getCookie(name) {
-		var match = document.cookie.match(new RegExp(name + "=([^;]+)"));
-		return match ? match[1] : "";
+		var escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		var match = document.cookie.match(new RegExp("(?:^|; )" + escapedName + "=([^;]*)"));
+		return match ? decodeURIComponent(match[1]) : "";
 	}
 
 	function setCookie(value, days) {
 		var expiry = new Date(Date.now() + days * 864e5).toUTCString();
-		document.cookie = _m4wCC.cookie + "=" + value + "; expires=" + expiry + "; path=/; SameSite=Lax" + (location.protocol === "https:" ? "; Secure" : "");
+		document.cookie = _m4wCC.cookie + "=" + encodeURIComponent(value) + "; expires=" + expiry + "; path=/; SameSite=Lax" + (location.protocol === "https:" ? "; Secure" : "");
 	}
 
 	function generateId() {
@@ -29,8 +30,10 @@
 	function getExistingConsent() {
 		var raw = getCookie(_m4wCC.cookie);
 		if (raw) return parseCookie(raw);
-		raw = getCookie("cookieyes-consent");
+
+		raw = getCookie(_m4wCC.oldCookie);
 		if (raw) return parseCookie(raw);
+
 		return null;
 	}
 

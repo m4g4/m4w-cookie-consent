@@ -1,10 +1,12 @@
 <?php
 /*
  * Plugin Name: M4W Cookie Consent
- * Description: A simple Wodrpess Cookie Consent plugin
- * Version: 1.0.0
+ * Description: A simple WordPress Cookie Consent plugin
+ * Version: 1.1.0
  * Author: m4g4
  * License: MIT
+ * Text Domain: m4w-cookie-consent
+ * Domain Path: /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +18,7 @@ require_once __DIR__ . '/meta-pixel.php';
 
 class M4W_CC_Cookie_Consent {
 
-	const COOKIE_NEW = 'm4w_cc_consent';
+	const COOKIE_DEFAULT = 'm4w_cc_consent';
 	const COOKIE_OLD = 'cookieyes-consent';
 	const OPTION_KEY = 'm4w_cc_settings';
 
@@ -31,6 +33,8 @@ class M4W_CC_Cookie_Consent {
 
 	public function __construct() {
 		$settings = $this->get_settings();
+
+		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 
 		if ( $settings['enabled'] ) {
 			add_action( 'wp_head', array( $this, 'output_gcm_defaults' ), -PHP_INT_MAX );
@@ -54,46 +58,24 @@ class M4W_CC_Cookie_Consent {
 		wp_send_json_success();
 	}
 
+	public function load_textdomain() {
+		load_muplugin_textdomain( 'm4w-cookie-consent', 'm4w-cookie-consent/languages' );
+	}
+
 	public function get_defaults() {
 		return array(
-			'banner_title'       => array(
-				'sk' => 'Tento web používa cookies',
-				'en' => 'This website uses cookies',
-			),
-			'banner_description' => array(
-				'sk' => 'Cookies používame na zabezpečenie fungovania stránky, analýzu návštevnosti a personalizáciu obsahu a reklám.',
-				'en' => 'We use cookies to ensure the website functions properly, analyze traffic, and personalize content and ads.',
-			),
-			'btn_accept'         => array(
-				'sk' => 'Prijať všetky',
-				'en' => 'Accept All',
-			),
-			'btn_accept_all'         => array(
-				'sk' => 'Prijať všetky',
-				'en' => 'Accept All',
-			),
-			'btn_reject'         => array(
-				'sk' => 'Len nevyhnutné',
-				'en' => 'Only Necessary',
-			),
-			'btn_customize'      => array(
-				'sk' => 'Nastavenia',
-				'en' => 'Customize',
-			),
-			'btn_save'           => array(
-				'sk' => 'Uložiť nastavenia',
-				'en' => 'Save Settings',
-			),
-			'pref_title'         => array(
-				'sk' => 'Nastavenia cookies',
-				'en' => 'Cookie Settings',
-			),
-			'privacy_link_text'  => array(
-				'sk' => 'Zásady ochrany osobných údajov',
-				'en' => 'Privacy Policy',
-			),
+			'banner_title'       => '',
+			'banner_description' => '',
+			'btn_accept'         => '',
+			'btn_accept_all'     => '',
+			'btn_reject'         => '',
+			'btn_customize'      => '',
+			'btn_save'           => '',
+			'pref_title'         => '',
+			'privacy_link_text'  => '',
 			'privacy_url'        => home_url( '/ochrana-osobnych-udajov/' ),
 			'enabled'                => true,
+			'cookie_id'              => self::COOKIE_DEFAULT,
 			'consent_expiry'         => 365,
 			'consent_expiry_rejected' => 30,
 			'gcm_enabled'            => true,
@@ -101,50 +83,26 @@ class M4W_CC_Cookie_Consent {
 			'header_scripts'         => '',
 			'categories'         => array(
 				'necessary'     => array(
-					'label'       => array(
-						'sk' => 'Nevyhnutné',
-						'en' => 'Necessary',
-					),
-					'description' => array(
-						'sk' => 'Tieto cookies sú nevyhnutné pre správne fungovanie webu.',
-						'en' => 'These cookies are essential for the website to function properly.',
-					),
+					'label'       => '',
+					'description' => '',
 					'required'    => true,
 					'default'     => true,
 				),
 				'functional'    => array(
-					'label'       => array(
-						'sk' => 'Funkčné',
-						'en' => 'Functional',
-					),
-					'description' => array(
-						'sk' => 'Umožňujú zapamätať si Vaše preferencie a zlepšujú používateľský komfort.',
-						'en' => 'Allow us to remember your preferences and enhance your experience.',
-					),
+					'label'       => '',
+					'description' => '',
 					'required'    => false,
 					'default'     => false,
 				),
 				'analytics'     => array(
-					'label'       => array(
-						'sk' => 'Analytické',
-						'en' => 'Analytics',
-					),
-					'description' => array(
-						'sk' => 'Pomáhajú nám analyzovať, ako návštevníci používajú web, a zlepšovať jeho fungovanie.',
-						'en' => 'Help us analyze how visitors use the website and improve its performance.',
-					),
+					'label'       => '',
+					'description' => '',
 					'required'    => false,
 					'default'     => false,
 				),
 				'advertisement' => array(
-					'label'       => array(
-						'sk' => 'Marketingové',
-						'en' => 'Marketing',
-					),
-					'description' => array(
-						'sk' => 'Používajú sa na zobrazovanie relevantných reklám a meranie ich účinnosti.',
-						'en' => 'Used to show relevant ads and measure their effectiveness.',
-					),
+					'label'       => '',
+					'description' => '',
 					'required'    => false,
 					'default'     => false,
 				),
@@ -155,42 +113,90 @@ class M4W_CC_Cookie_Consent {
 	public function get_settings() {
 		$defaults = $this->get_defaults();
 		$saved    = get_option( self::OPTION_KEY, array() );
-		return wp_parse_args( $saved, $defaults );
-	}
-
-	public function get_locale() {
-		$locale = get_locale();
-		if ( strpos( $locale, 'sk' ) === 0 ) {
-			return 'sk';
-		}
-		return 'en';
+		return array_replace_recursive( $defaults, is_array( $saved ) ? $saved : array() );
 	}
 
 	public function t( $key ) {
 		$settings = $this->get_settings();
-		$lang     = $this->get_locale();
-		if ( isset( $settings[ $key ][ $lang ] ) ) {
-			return $settings[ $key ][ $lang ];
-		}
-		if ( isset( $settings[ $key ]['en'] ) ) {
-			return $settings[ $key ]['en'];
-		}
-		if ( isset( $settings[ $key ] ) && is_string( $settings[ $key ] ) ) {
+		if ( isset( $settings[ $key ] ) && is_string( $settings[ $key ] ) && $settings[ $key ] !== '' ) {
 			return $settings[ $key ];
 		}
-		return '';
+
+		return $this->get_default_text( $key );
+	}
+
+	public function get_default_text( $key ) {
+		$defaults = array(
+			'banner_title'       => __( 'This website uses cookies', 'm4w-cookie-consent' ),
+			'banner_description' => __( 'We use cookies to ensure the website functions properly, analyze traffic, and personalize content and ads.', 'm4w-cookie-consent' ),
+			'btn_accept'         => __( 'Accept All', 'm4w-cookie-consent' ),
+			'btn_accept_all'     => __( 'Accept All', 'm4w-cookie-consent' ),
+			'btn_reject'         => __( 'Only Necessary', 'm4w-cookie-consent' ),
+			'btn_customize'      => __( 'Customize', 'm4w-cookie-consent' ),
+			'btn_save'           => __( 'Save Settings', 'm4w-cookie-consent' ),
+			'pref_title'         => __( 'Cookie Settings', 'm4w-cookie-consent' ),
+			'privacy_link_text'  => __( 'Privacy Policy', 'm4w-cookie-consent' ),
+		);
+
+		return isset( $defaults[ $key ] ) ? $defaults[ $key ] : '';
+	}
+
+	public function get_category_text( $slug, $field ) {
+		$settings = $this->get_settings();
+		if ( isset( $settings['categories'][ $slug ][ $field ] ) && is_string( $settings['categories'][ $slug ][ $field ] ) && $settings['categories'][ $slug ][ $field ] !== '' ) {
+			return $settings['categories'][ $slug ][ $field ];
+		}
+
+		return $this->get_default_category_text( $slug, $field );
+	}
+
+	public function get_default_category_text( $slug, $field ) {
+		$defaults = array(
+			'necessary'     => array(
+				'label'       => __( 'Necessary', 'm4w-cookie-consent' ),
+				'description' => __( 'These cookies are essential for the website to function properly.', 'm4w-cookie-consent' ),
+			),
+			'functional'    => array(
+				'label'       => __( 'Functional', 'm4w-cookie-consent' ),
+				'description' => __( 'Allow us to remember your preferences and enhance your experience.', 'm4w-cookie-consent' ),
+			),
+			'analytics'     => array(
+				'label'       => __( 'Analytics', 'm4w-cookie-consent' ),
+				'description' => __( 'Help us analyze how visitors use the website and improve its performance.', 'm4w-cookie-consent' ),
+			),
+			'advertisement' => array(
+				'label'       => __( 'Marketing', 'm4w-cookie-consent' ),
+				'description' => __( 'Used to show relevant ads and measure their effectiveness.', 'm4w-cookie-consent' ),
+			),
+		);
+
+		return isset( $defaults[ $slug ][ $field ] ) ? $defaults[ $slug ][ $field ] : '';
 	}
 
 	public function get_consent_cookie() {
-		$new = isset( $_COOKIE[ self::COOKIE_NEW ] ) ? $_COOKIE[ self::COOKIE_NEW ] : '';
-		if ( $new ) {
-			return $this->parse_consent_cookie( $new );
+		$primary_cookie_id = $this->get_primary_cookie_id();
+		$primary_value     = isset( $_COOKIE[ $primary_cookie_id ] ) ? $_COOKIE[ $primary_cookie_id ] : '';
+		if ( $primary_value ) {
+			return $this->parse_consent_cookie( $primary_value );
 		}
-		$old = isset( $_COOKIE[ self::COOKIE_OLD ] ) ? $_COOKIE[ self::COOKIE_OLD ] : '';
-		if ( $old ) {
-			return $this->parse_consent_cookie( $old );
+
+		$old_value = isset( $_COOKIE[ self::COOKIE_OLD ] ) ? $_COOKIE[ self::COOKIE_OLD ] : '';
+		if ( $old_value ) {
+			return $this->parse_consent_cookie( $old_value );
 		}
+
 		return null;
+	}
+
+	public function get_primary_cookie_id() {
+		$settings  = $this->get_settings();
+		$cookie_id = isset( $settings['cookie_id'] ) ? $this->sanitize_cookie_id( $settings['cookie_id'] ) : '';
+
+		return $cookie_id ? $cookie_id : self::COOKIE_DEFAULT;
+	}
+
+	public function sanitize_cookie_id( $cookie_id ) {
+		return preg_replace( '/[^A-Za-z0-9_.-]/', '', trim( (string) $cookie_id ) );
 	}
 
 	private function parse_consent_cookie( $value ) {
@@ -199,6 +205,7 @@ class M4W_CC_Cookie_Consent {
 			'consent'   => '',
 			'action'    => '',
 		);
+
 		$pairs = explode( ',', $value );
 		foreach ( $pairs as $pair ) {
 			$parts = explode( ':', $pair, 2 );
@@ -206,6 +213,7 @@ class M4W_CC_Cookie_Consent {
 				$data[ $parts[0] ] = $parts[1];
 			}
 		}
+
 		return $data;
 	}
 
@@ -221,8 +229,9 @@ class M4W_CC_Cookie_Consent {
 		} else {
 			$expiry = (int) $settings['consent_expiry_rejected'];
 		}
-		setcookie( self::COOKIE_NEW, $value, time() + $expiry * DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
-		$_COOKIE[ self::COOKIE_NEW ] = $value;
+		$cookie_id = $this->get_primary_cookie_id();
+		setcookie( $cookie_id, $value, time() + $expiry * DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+		$_COOKIE[ $cookie_id ] = $value;
 	}
 
 	private function is_full_consent( $data ) {
@@ -301,8 +310,8 @@ gtag("set","developer_id.dY2Q2ZW",true);
 
 	public function enqueue_assets() {
 		$url = untrailingslashit( plugin_dir_url( __FILE__ ) );
-		wp_enqueue_style( 'm4w-cc-banner', $url . '/assets/m4w-cookie-consent.css', array(), '1.0' );
-		wp_enqueue_script( 'm4w-cc-banner', $url . '/assets/m4w-cookie-consent.js', array(), '1.0', true );
+		wp_enqueue_style( 'm4w-cc-banner', $url . '/assets/m4w-cookie-consent.css', array(), '1.1.0' );
+		wp_enqueue_script( 'm4w-cc-banner', $url . '/assets/m4w-cookie-consent.js', array(), '1.1.0', true );
 		$settings = $this->get_settings();
 		wp_localize_script(
 			'm4w-cc-banner',
@@ -310,7 +319,8 @@ gtag("set","developer_id.dY2Q2ZW",true);
 			array(
 				'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
 				'nonce'            => wp_create_nonce( 'm4w_cc_consent' ),
-				'cookie'           => self::COOKIE_NEW,
+				'cookie'           => $this->get_primary_cookie_id(),
+				'oldCookie'        => self::COOKIE_OLD,
 				'expiry'           => (int) $settings['consent_expiry'],
 				'expiryRejected'   => (int) $settings['consent_expiry_rejected'],
 				'gcm'              => $settings['gcm_enabled'],
@@ -368,11 +378,11 @@ gtag("set","developer_id.dY2Q2ZW",true);
 					<label>
 						<input type="checkbox" class="m4w-cc-cat-checkbox" data-slug="<?php echo esc_attr( $slug ); ?>"
 							<?php echo ! empty( $cat['required'] ) ? 'checked disabled' : ''; ?>>
-						<?php echo esc_html( isset( $cat['label'][ $this->get_locale() ] ) ? $cat['label'][ $this->get_locale() ] : $cat['label']['en'] ); ?>
+						<?php echo esc_html( $this->get_category_text( $slug, 'label' ) ); ?>
 					</label>
 				</td>
 				<td>
-					<?php echo esc_html( isset( $cat['description'][ $this->get_locale() ] ) ? $cat['description'][ $this->get_locale() ] : $cat['description']['en'] ); ?>
+					<?php echo esc_html( $this->get_category_text( $slug, 'description' ) ); ?>
 				</td>
 			</tr>
 			<?php endforeach; ?>

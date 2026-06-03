@@ -28,10 +28,8 @@ function m4w_cc_sanitize_settings( $input ) {
 	$output   = $defaults;
 
 	foreach ( array( 'banner_title', 'banner_description', 'btn_accept', 'btn_accept_all', 'btn_reject', 'btn_customize', 'btn_save', 'pref_title', 'privacy_link_text' ) as $text_field ) {
-		if ( isset( $input[ $text_field ] ) && is_array( $input[ $text_field ] ) ) {
-			foreach ( array( 'sk', 'en' ) as $lang ) {
-				$output[ $text_field ][ $lang ] = sanitize_text_field( $input[ $text_field ][ $lang ] );
-			}
+		if ( isset( $input[ $text_field ] ) ) {
+			$output[ $text_field ] = $text_field === 'banner_description' ? sanitize_textarea_field( $input[ $text_field ] ) : sanitize_text_field( $input[ $text_field ] );
 		}
 	}
 
@@ -40,6 +38,8 @@ function m4w_cc_sanitize_settings( $input ) {
 	}
 
 	$output['enabled']                 = ! empty( $input['enabled'] );
+	$output['cookie_id']               = isset( $input['cookie_id'] ) ? $consent->sanitize_cookie_id( $input['cookie_id'] ) : $defaults['cookie_id'];
+	$output['cookie_id']               = $output['cookie_id'] ? $output['cookie_id'] : $defaults['cookie_id'];
 	$output['consent_expiry']         = isset( $input['consent_expiry'] ) ? absint( $input['consent_expiry'] ) : 365;
 	$output['consent_expiry_rejected'] = isset( $input['consent_expiry_rejected'] ) ? absint( $input['consent_expiry_rejected'] ) : 30;
 	$output['gcm_enabled']            = ! empty( $input['gcm_enabled'] );
@@ -48,16 +48,8 @@ function m4w_cc_sanitize_settings( $input ) {
 
 	if ( isset( $input['categories'] ) && is_array( $input['categories'] ) ) {
 		foreach ( $output['categories'] as $slug => $cat ) {
-			if ( isset( $input['categories'][ $slug ]['label'] ) ) {
-				foreach ( array( 'sk', 'en' ) as $lang ) {
-					$output['categories'][ $slug ]['label'][ $lang ] = sanitize_text_field( $input['categories'][ $slug ]['label'][ $lang ] );
-				}
-			}
-			if ( isset( $input['categories'][ $slug ]['description'] ) ) {
-				foreach ( array( 'sk', 'en' ) as $lang ) {
-					$output['categories'][ $slug ]['description'][ $lang ] = sanitize_textarea_field( $input['categories'][ $slug ]['description'][ $lang ] );
-				}
-			}
+			$output['categories'][ $slug ]['label']       = isset( $input['categories'][ $slug ]['label'] ) ? sanitize_text_field( $input['categories'][ $slug ]['label'] ) : '';
+			$output['categories'][ $slug ]['description'] = isset( $input['categories'][ $slug ]['description'] ) ? sanitize_textarea_field( $input['categories'][ $slug ]['description'] ) : '';
 		}
 	}
 
@@ -74,21 +66,18 @@ function m4w_cc_render_admin_page() {
 			<?php settings_fields( 'm4w_cc_settings' ); ?>
 			<?php do_settings_sections( 'm4w_cc_settings' ); ?>
 
-			<h2><?php esc_html_e( 'Banner Text', 'm4w-cookie-consent' ); ?></h2>
+			<h2><?php esc_html_e( 'Text Overrides', 'm4w-cookie-consent' ); ?></h2>
+			<p class="description"><?php esc_html_e( 'Leave fields empty to use the translated default text.', 'm4w-cookie-consent' ); ?></p>
 			<table class="form-table" role="presentation">
 				<?php foreach ( array( 'banner_title', 'banner_description', 'btn_accept', 'btn_accept_all', 'btn_reject', 'btn_customize', 'btn_save', 'pref_title', 'privacy_link_text' ) as $key ) : ?>
 				<tr>
 					<th scope="row"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $key ) ) ); ?></th>
 					<td>
-						<?php foreach ( array( 'sk' => 'Slovak', 'en' => 'English' ) as $lang => $label ) : ?>
-							<p><strong><?php echo esc_html( $label ); ?>:</strong>
-							<?php if ( in_array( $key, array( 'banner_description' ), true ) ) : ?>
-								<textarea name="m4w_cc_settings[<?php echo esc_attr( $key ); ?>][<?php echo esc_attr( $lang ); ?>]" rows="3" class="large-text"><?php echo esc_textarea( $settings[ $key ][ $lang ] ); ?></textarea>
-							<?php else : ?>
-								<input type="text" name="m4w_cc_settings[<?php echo esc_attr( $key ); ?>][<?php echo esc_attr( $lang ); ?>]" value="<?php echo esc_attr( $settings[ $key ][ $lang ] ); ?>" class="large-text">
-							<?php endif; ?>
-							</p>
-						<?php endforeach; ?>
+						<?php if ( in_array( $key, array( 'banner_description' ), true ) ) : ?>
+							<textarea name="m4w_cc_settings[<?php echo esc_attr( $key ); ?>]" rows="3" class="large-text" placeholder="<?php echo esc_attr( $consent->get_default_text( $key ) ); ?>"><?php echo esc_textarea( is_string( $settings[ $key ] ) ? $settings[ $key ] : '' ); ?></textarea>
+						<?php else : ?>
+							<input type="text" name="m4w_cc_settings[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( is_string( $settings[ $key ] ) ? $settings[ $key ] : '' ); ?>" placeholder="<?php echo esc_attr( $consent->get_default_text( $key ) ); ?>" class="large-text">
+						<?php endif; ?>
 					</td>
 				</tr>
 				<?php endforeach; ?>
@@ -100,12 +89,10 @@ function m4w_cc_render_admin_page() {
 				<tr>
 					<th scope="row"><?php echo esc_html( $slug ); ?></th>
 					<td>
-						<?php foreach ( array( 'sk' => 'Slovak', 'en' => 'English' ) as $lang => $label ) : ?>
-							<p><strong><?php echo esc_html( $label ); ?> Label:</strong>
-							<input type="text" name="m4w_cc_settings[categories][<?php echo esc_attr( $slug ); ?>][label][<?php echo esc_attr( $lang ); ?>]" value="<?php echo esc_attr( $cat['label'][ $lang ] ); ?>" class="large-text"></p>
-							<p><strong><?php echo esc_html( $label ); ?> Description:</strong>
-							<textarea name="m4w_cc_settings[categories][<?php echo esc_attr( $slug ); ?>][description][<?php echo esc_attr( $lang ); ?>]" rows="2" class="large-text"><?php echo esc_textarea( $cat['description'][ $lang ] ); ?></textarea></p>
-						<?php endforeach; ?>
+						<p><strong><?php esc_html_e( 'Label override', 'm4w-cookie-consent' ); ?>:</strong>
+						<input type="text" name="m4w_cc_settings[categories][<?php echo esc_attr( $slug ); ?>][label]" value="<?php echo esc_attr( is_string( $cat['label'] ) ? $cat['label'] : '' ); ?>" placeholder="<?php echo esc_attr( $consent->get_default_category_text( $slug, 'label' ) ); ?>" class="large-text"></p>
+						<p><strong><?php esc_html_e( 'Description override', 'm4w-cookie-consent' ); ?>:</strong>
+						<textarea name="m4w_cc_settings[categories][<?php echo esc_attr( $slug ); ?>][description]" rows="2" class="large-text" placeholder="<?php echo esc_attr( $consent->get_default_category_text( $slug, 'description' ) ); ?>"><?php echo esc_textarea( is_string( $cat['description'] ) ? $cat['description'] : '' ); ?></textarea></p>
 					</td>
 				</tr>
 				<?php endforeach; ?>
@@ -120,6 +107,13 @@ function m4w_cc_render_admin_page() {
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Privacy Policy URL', 'm4w-cookie-consent' ); ?></th>
 					<td><input type="url" name="m4w_cc_settings[privacy_url]" value="<?php echo esc_attr( $settings['privacy_url'] ); ?>" class="large-text"></td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Cookie ID', 'm4w-cookie-consent' ); ?></th>
+					<td>
+						<input type="text" name="m4w_cc_settings[cookie_id]" value="<?php echo esc_attr( $settings['cookie_id'] ); ?>" class="regular-text">
+						<p class="description"><?php esc_html_e( 'Cookie name written by this plugin. Changing this value invalidates consent stored under the previous primary cookie name; CookieYes consent is still read as a migration fallback.', 'm4w-cookie-consent' ); ?></p>
+					</td>
 				</tr>
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Consent Expiry (days)', 'm4w-cookie-consent' ); ?></th>

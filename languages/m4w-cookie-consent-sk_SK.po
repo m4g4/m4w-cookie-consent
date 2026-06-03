@@ -1,0 +1,125 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: M4W Cookie Consent 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-02 00:00+0000\n"
+"PO-Revision-Date: 2026-06-02 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: sk_SK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Codex\n"
+"X-Domain: m4w-cookie-consent\n"
+
+msgid "This website uses cookies"
+msgstr "Tento web používa cookies"
+
+msgid "We use cookies to ensure the website functions properly, analyze traffic, and personalize content and ads."
+msgstr "Cookies používame na zabezpečenie fungovania stránky, analýzu návštevnosti a personalizáciu obsahu a reklám."
+
+msgid "Accept All"
+msgstr "Prijať všetky"
+
+msgid "Only Necessary"
+msgstr "Len nevyhnutné"
+
+msgid "Customize"
+msgstr "Nastavenia"
+
+msgid "Save Settings"
+msgstr "Uložiť nastavenia"
+
+msgid "Cookie Settings"
+msgstr "Nastavenia cookies"
+
+msgid "Privacy Policy"
+msgstr "Zásady ochrany osobných údajov"
+
+msgid "Necessary"
+msgstr "Nevyhnutné"
+
+msgid "These cookies are essential for the website to function properly."
+msgstr "Tieto cookies sú nevyhnutné pre správne fungovanie webu."
+
+msgid "Functional"
+msgstr "Funkčné"
+
+msgid "Allow us to remember your preferences and enhance your experience."
+msgstr "Umožňujú zapamätať si Vaše preferencie a zlepšujú používateľský komfort."
+
+msgid "Analytics"
+msgstr "Analytické"
+
+msgid "Help us analyze how visitors use the website and improve its performance."
+msgstr "Pomáhajú nám analyzovať, ako návštevníci používajú web, a zlepšovať jeho fungovanie."
+
+msgid "Marketing"
+msgstr "Marketingové"
+
+msgid "Used to show relevant ads and measure their effectiveness."
+msgstr "Používajú sa na zobrazovanie relevantných reklám a meranie ich účinnosti."
+
+msgid "Text Overrides"
+msgstr "Prepísanie textov"
+
+msgid "Leave fields empty to use the translated default text."
+msgstr "Ak pole necháte prázdne, použije sa predvolený preložený text."
+
+msgid "Categories"
+msgstr "Kategórie"
+
+msgid "Settings"
+msgstr "Nastavenia"
+
+msgid "Label override"
+msgstr "Prepísanie názvu"
+
+msgid "Description override"
+msgstr "Prepísanie popisu"
+
+msgid "Enable Plugin"
+msgstr "Zapnúť plugin"
+
+msgid "Display cookie consent banner on the frontend"
+msgstr "Zobrazovať lištu súhlasu s cookies na webe"
+
+msgid "Privacy Policy URL"
+msgstr "URL zásad ochrany osobných údajov"
+
+msgid "Primary Cookie ID"
+msgstr "Primárne ID cookie"
+
+msgid "Cookie name written by this plugin. Changing this value invalidates consent stored under the previous primary cookie name; CookieYes consent is still read as a migration fallback."
+msgstr "Názov cookie, ktorú zapisuje tento plugin. Zmena tejto hodnoty zneplatní súhlas uložený pod predchádzajúcim primárnym názvom cookie; súhlas CookieYes sa stále číta ako migračná záloha."
+
+msgid "Consent Expiry (days)"
+msgstr "Platnosť súhlasu (dni)"
+
+msgid "For users who accepted all categories."
+msgstr "Pre používateľov, ktorí prijali všetky kategórie."
+
+msgid "Rejected Expiry (days)"
+msgstr "Platnosť odmietnutia (dni)"
+
+msgid "For users who rejected or customized. Shorter value shows the banner more often."
+msgstr "Pre používateľov, ktorí odmietli alebo upravili súhlas. Kratšia hodnota zobrazí lištu častejšie."
+
+msgid "Google Consent Mode v2"
+msgstr "Google Consent Mode v2"
+
+msgid "Enable GCM v2"
+msgstr "Zapnúť GCM v2"
+
+msgid "CSS Override"
+msgstr "Vlastné CSS"
+
+msgid "Custom CSS to override banner styles. Uses m4w-cc-* selectors."
+msgstr "Vlastné CSS na úpravu štýlov lišty. Používa selektory m4w-cc-*."
+
+msgid "Header Scripts"
+msgstr "Skripty v hlavičke"
+
+msgid "Custom JavaScript injected into <head>. Do not include <script> tags."
+msgstr "Vlastný JavaScript vložený do <head>. Nevkladajte značky <script>."
