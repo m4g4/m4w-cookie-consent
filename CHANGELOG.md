@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1] - 2026-06-09
+
+### Changed
+- Renamed CSS/JS asset files from `m4w-cookie-consent.*` to `m4w-cc-core.*` to avoid ad blocker detection
+- Version bumped from 1.1.0 to 1.1.1
+
 ## [1.1.0] - 2026-06-02
 
 ### Added

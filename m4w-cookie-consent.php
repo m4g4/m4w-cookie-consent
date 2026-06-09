@@ -2,7 +2,7 @@
 /*
  * Plugin Name: M4W Cookie Consent
  * Description: A simple WordPress Cookie Consent plugin
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: m4g4
  * License: MIT
  * Text Domain: m4w-cookie-consent
@@ -310,8 +310,8 @@ gtag("set","developer_id.dY2Q2ZW",true);
 
 	public function enqueue_assets() {
 		$url = untrailingslashit( plugin_dir_url( __FILE__ ) );
-		wp_enqueue_style( 'm4w-cc-banner', $url . '/assets/m4w-cookie-consent.css', array(), '1.1.0' );
-		wp_enqueue_script( 'm4w-cc-banner', $url . '/assets/m4w-cookie-consent.js', array(), '1.1.0', true );
+		wp_enqueue_style( 'm4w-cc-banner', $url . '/assets/m4w-cc-core.css', array(), '1.1.1' );
+		wp_enqueue_script( 'm4w-cc-banner', $url . '/assets/m4w-cc-core.js', array(), '1.1.1', true );
 		$settings = $this->get_settings();
 		wp_localize_script(
 			'm4w-cc-banner',
